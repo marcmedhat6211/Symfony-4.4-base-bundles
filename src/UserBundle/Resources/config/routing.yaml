@@ -1,0 +1,4 @@
+user_security_login:
+  path: /login
+  defaults: { _controller: App\UserBundle\Controller\SecurityController::login }
+  methods: GET|POST
