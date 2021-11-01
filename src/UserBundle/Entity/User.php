@@ -5,13 +5,11 @@ namespace App\UserBundle\Entity;
 use App\UserBundle\Model\BaseUser;
 use App\UserBundle\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use phpDocumentor\Reflection\Types\Integer;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
- * @UniqueEntity("email")
- * @UniqueEntity("username")
  */
 class User extends BaseUser
 {
@@ -46,6 +44,11 @@ class User extends BaseUser
      * @ORM\Column(name="facebook_id", type="string", length=255, nullable=true)
      */
     private $facebookId;
+
+    public function getId(): Integer
+    {
+        return $this->id;
+    }
 
     public function getGender(): ?string
     {

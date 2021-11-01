@@ -31,6 +31,8 @@ class RegistrationType extends AbstractType
             ->add('phone', TextType::class, [
                 'attr' => [
                     'placeholder' => '01xxxxxxxxx',
+                    'max' => 11,
+                    'min' => 11,
                 ]
             ])
             ->add('password', RepeatedType::class, [

@@ -6,10 +6,10 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Security\Core\User\UserInterface;
 
-abstract class BaseUser implements UserInterface
+abstract class BaseUser implements PNUserInterface
 {
     /**
-     * @ORM\Column(name="username", type="string", length=120, unique=true)
+     * @ORM\Column(name="username", type="string", length=120)
      * @Assert\NotBlank
      * @Assert\Length(
      *     min="2",
@@ -27,7 +27,7 @@ abstract class BaseUser implements UserInterface
     protected $usernameCanonical;
 
     /**
-     * @ORM\Column(name="email", type="string", length=180, unique=true)
+     * @ORM\Column(name="email", type="string", length=180)
      * @Assert\NotBlank
      * @Assert\Email(message="The email '{{ value }}' is not a valid email")
      * @Assert\Length(
@@ -76,21 +76,10 @@ abstract class BaseUser implements UserInterface
      */
     protected $confirmationToken;
 
-    /***********************************************************METHODS EDITED BY AUTHOR************************************************************/
-    public function setUsernameCanonical(): self
+    public function __toString()
     {
-        $this->usernameCanonical = strtolower($this->username);
-
-        return $this;
+        return (string) $this->getUsername();
     }
-
-    public function setEmailCanonical(): self
-    {
-        $this->emailCanonical = strtolower($this->email);
-
-        return $this;
-    }
-    /***********************************************************END METHODS EDITED BY AUTHOR************************************************************/
 
     /**
      * A visual identifier that represents this user.
@@ -102,7 +91,7 @@ abstract class BaseUser implements UserInterface
         return (string) $this->username;
     }
 
-    public function setUsername(string $username): self
+    public function setUsername($username): self
     {
         $this->username = $username;
 
@@ -128,6 +117,51 @@ abstract class BaseUser implements UserInterface
         return $this;
     }
 
+    public function addRole($role)
+    {
+        $role = strtoupper($role);
+        if ($role === static::ROLE_DEFAULT) {
+            return $this;
+        }
+
+        if (!in_array($role, $this->roles, true)) {
+            $this->roles[] = $role;
+        }
+
+        return $this;
+    }
+
+    public function removeRole($role)
+    {
+        if (false !== $key = array_search(strtoupper($role), $this->roles, true)) {
+            unset($this->roles[$key]);
+            $this->roles = array_values($this->roles);
+        }
+
+        return $this;
+    }
+
+    public function hasRole($role)
+    {
+        return in_array(strtoupper($role), $this->getRoles(), true);
+    }
+
+    public function setSuperAdmin($boolean)
+    {
+        if (true === $boolean) {
+            $this->addRole(static::ROLE_SUPER_ADMIN);
+        } else {
+            $this->removeRole(static::ROLE_SUPER_ADMIN);
+        }
+
+        return $this;
+    }
+
+    public function isSuperAdmin()
+    {
+        return $this->hasRole(static::ROLE_SUPER_ADMIN);
+    }
+
     /**
      * @see UserInterface
      */
@@ -136,7 +170,7 @@ abstract class BaseUser implements UserInterface
         return $this->password;
     }
 
-    public function setPassword(string $password): self
+    public function setPassword($password)
     {
         $this->password = $password;
 
@@ -168,12 +202,19 @@ abstract class BaseUser implements UserInterface
         return $this->usernameCanonical;
     }
 
+    public function setUsernameCanonical($usernameCanonical)
+    {
+        $this->usernameCanonical = $usernameCanonical;
+
+        return $this;
+    }
+
     public function getEmail(): ?string
     {
         return $this->email;
     }
 
-    public function setEmail(string $email): self
+    public function setEmail($email)
     {
         $this->email = $email;
 
@@ -185,12 +226,19 @@ abstract class BaseUser implements UserInterface
         return $this->emailCanonical;
     }
 
+    public function setEmailCanonical($emailCanonical)
+    {
+        $this->emailCanonical = strtolower($this->email);
+
+        return $this;
+    }
+
     public function getEnabled(): ?bool
     {
         return $this->enabled;
     }
 
-    public function setEnabled(bool $enabled): self
+    public function setEnabled($enabled)
     {
         $this->enabled = $enabled;
 
@@ -202,7 +250,7 @@ abstract class BaseUser implements UserInterface
         return $this->lastLogin;
     }
 
-    public function setLastLogin(\DateTimeInterface $lastLogin): self
+    public function setLastLogin(\DateTime $lastLogin = null)
     {
         $this->lastLogin = $lastLogin;
 
@@ -214,7 +262,7 @@ abstract class BaseUser implements UserInterface
         return $this->passwordRequestedAt;
     }
 
-    public function setPasswordRequestedAt(\DateTimeInterface $passwordRequestedAt): self
+    public function setPasswordRequestedAt(\DateTime $passwordRequestedAt = null)
     {
         $this->passwordRequestedAt = $passwordRequestedAt;
 
@@ -226,7 +274,7 @@ abstract class BaseUser implements UserInterface
         return $this->confirmationToken;
     }
 
-    public function setConfirmationToken(?string $confirmationToken): self
+    public function setConfirmationToken($confirmationToken)
     {
         $this->confirmationToken = $confirmationToken;
 
