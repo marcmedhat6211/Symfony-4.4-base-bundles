@@ -11,7 +11,3 @@ services:
   App\UserBundle\Controller\:
     resource: '../../Controller/*'
     tags: ['controller.service_arguments']
-
-  App\UserBundle\Security\:
-    resource: '../../Security/*'
-    tags: [ 'security.security_arguments' ]

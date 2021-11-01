@@ -1,4 +1,14 @@
-user_security_login:
+app_login:
   path: /login
   defaults: { _controller: App\UserBundle\Controller\SecurityController::login }
+  methods: GET|POST
+
+app_logout:
+  path: /logout
+  defaults: { _controller: App\UserBundle\Controller\SecurityController::logout }
+  methods: GET|POST
+
+app_registration:
+  path: /register
+  defaults: { _controller: App\UserBundle\Controller\RegistrationController::register }
   methods: GET|POST
