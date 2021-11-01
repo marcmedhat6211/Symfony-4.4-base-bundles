@@ -2,15 +2,22 @@
 
 namespace App\UserBundle\Entity;
 
+use App\UserBundle\Model\BaseUser;
 use App\UserBundle\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
+ * @UniqueEntity("email")
+ * @UniqueEntity("username")
  */
-class User implements UserInterface
+class User extends BaseUser
 {
+    const GENDER_MALE='male';
+    const GENDER_FEMALE='female';
+
     /**
      * @ORM\Id
      * @ORM\GeneratedValue
@@ -19,94 +26,72 @@ class User implements UserInterface
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=180, unique=true)
+     * @ORM\Column(name="gender", type="string", length=20)
      */
-    private $username;
+    private $gender = self::GENDER_MALE;
 
     /**
-     * @ORM\Column(type="json")
+     * @ORM\Column(name="birthdate", type="datetime", nullable=true)
      */
-    private $roles = [];
+    private $birthdate;
 
     /**
-     * @var string The hashed password
-     * @ORM\Column(type="string")
-     */
-    private $password;
-
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
-
-    /**
-     * A visual identifier that represents this user.
+     * @Assert\Regex("/^[0-9\(\)\/\+ \-]+$/i")
      *
-     * @see UserInterface
+     * @ORM\Column(name="phone", type="string", nullable=true)
      */
-    public function getUsername(): string
+    private $phone;
+
+    /**
+     * @ORM\Column(name="facebook_id", type="string", length=255, nullable=true)
+     */
+    private $facebookId;
+
+    public function getGender(): ?string
     {
-        return (string) $this->username;
+        return $this->gender;
     }
 
-    public function setUsername(string $username): self
+    public function setGender(string $gender): self
     {
-        $this->username = $username;
+        $this->gender = $gender;
 
         return $this;
     }
 
-    /**
-     * @see UserInterface
-     */
-    public function getRoles(): array
+    public function getBirthdate(): ?\DateTimeInterface
     {
-        $roles = $this->roles;
-        // guarantee every user at least has ROLE_USER
-        $roles[] = 'ROLE_USER';
-
-        return array_unique($roles);
+        return $this->birthdate;
     }
 
-    public function setRoles(array $roles): self
+    public function setBirthdate(?\DateTimeInterface $birthdate): self
     {
-        $this->roles = $roles;
+        $this->birthdate = $birthdate;
 
         return $this;
     }
 
-    /**
-     * @see UserInterface
-     */
-    public function getPassword(): ?string
+    public function getPhone(): ?string
     {
-        return $this->password;
+        return $this->phone;
     }
 
-    public function setPassword(string $password): self
+    public function setPhone(string $phone): self
     {
-        $this->password = $password;
+        $this->phone = $phone;
 
         return $this;
     }
 
-    /**
-     * Returning a salt is only needed, if you are not using a modern
-     * hashing algorithm (e.g. bcrypt or sodium) in your security.yaml.
-     *
-     * @see UserInterface
-     */
-    public function getSalt(): ?string
+    public function getFacebookId(): ?string
     {
-        return null;
+        return $this->facebookId;
     }
 
-    /**
-     * @see UserInterface
-     */
-    public function eraseCredentials()
+    public function setFacebookId(?string $facebookId): self
     {
-        // If you store any temporary, sensitive data on the user, clear it here
-        // $this->plainPassword = null;
+        $this->facebookId = $facebookId;
+
+        return $this;
     }
 }
