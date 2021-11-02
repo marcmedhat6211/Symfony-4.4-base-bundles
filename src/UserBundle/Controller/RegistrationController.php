@@ -33,6 +33,12 @@ class RegistrationController extends AbstractController
         GuardAuthenticatorHandler    $guard
     ): Response
     {
+        //if user is already logged in just redirect him to home and tell him that he needs to logout first
+        if ($this->getUser()) {
+            $this->addFlash('warning', 'You are already logged in as a user, please logout if you want to create another account with different credentials');
+            return $this->redirectToRoute('fe_home');
+        }
+
         $user = new User();
         $form = $this->createForm(RegistrationType::class, $user);
         $form->handleRequest($request);
