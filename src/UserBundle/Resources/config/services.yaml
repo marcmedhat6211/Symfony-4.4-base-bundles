@@ -11,3 +11,9 @@ services:
   App\UserBundle\Controller\:
     resource: '../../Controller/*'
     tags: ['controller.service_arguments']
+
+  app.registration_listener:
+    class: App\UserBundle\EventListener\RegistrationListener
+    arguments: [ ]
+    tags:
+      - { name: kernel.event_subscriber }
