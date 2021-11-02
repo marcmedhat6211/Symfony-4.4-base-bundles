@@ -6,6 +6,8 @@ use App\UserBundle\Entity\User;
 use App\UserBundle\Event\RegistrationEvent;
 use App\UserBundle\Form\RegistrationType;
 use App\UserBundle\PNUserEvents;
+use App\UserBundle\Security\CustomAuthenticator;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -13,6 +15,7 @@ use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Symfony\Component\Security\Guard\GuardAuthenticatorHandler;
 
 class RegistrationController extends AbstractController
 {
@@ -24,7 +27,10 @@ class RegistrationController extends AbstractController
         Request                      $request,
         RequestStack                 $requestStack,
         UserPasswordEncoderInterface $passwordEncoder,
-        EventDispatcherInterface     $eventDispatcher
+        EventDispatcherInterface     $eventDispatcher,
+        EntityManagerInterface       $em,
+        CustomAuthenticator          $authenticator,
+        GuardAuthenticatorHandler    $guard
     ): Response
     {
         $user = new User();
@@ -45,12 +51,13 @@ class RegistrationController extends AbstractController
                 return $this->redirect($this->generateUrl('app_registration'));
             }
 
-            $em = $this->getDoctrine()->getManager();
             $em->persist($user);
             $em->flush();
 
             $this->addFlash('success', 'Signed Up successfully');
-            return $this->redirect($this->generateUrl('app_login'));
+
+            //Login after Registration is complete
+            return $guard->authenticateUserAndHandleSuccess($user, $request, $authenticator, 'main');
         }
 
         return $this->render('user/registration/index.html.twig', [
