@@ -15,7 +15,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\Security\Guard\GuardAuthenticatorHandler;
 
 class RegistrationController extends AbstractController
@@ -27,7 +26,6 @@ class RegistrationController extends AbstractController
     public function register(
         Request                      $request,
         RequestStack                 $requestStack,
-        UserPasswordEncoderInterface $passwordEncoder,
         PasswordUpdaterInterface     $passwordUpdater,
         EventDispatcherInterface     $eventDispatcher,
         EntityManagerInterface       $em,

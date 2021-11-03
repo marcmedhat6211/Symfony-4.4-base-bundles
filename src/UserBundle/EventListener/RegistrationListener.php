@@ -5,11 +5,9 @@ namespace App\UserBundle\EventListener;
 use App\UserBundle\Entity\User;
 use App\UserBundle\Event\RegistrationEvent;
 use App\UserBundle\PNUserEvents;
-use App\UserBundle\Util\Canonicalizer;
 use App\UserBundle\Util\CanonicalizerInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
 
 class RegistrationListener implements EventSubscriberInterface
 {
@@ -60,6 +58,13 @@ class RegistrationListener implements EventSubscriberInterface
         $userByUsername = $this->em->getRepository(User::class)->findBy(['usernameCanonical' => $user->getUsernameCanonical()]);
         $userByEmail = $this->em->getRepository(User::class)->findBy(['emailCanonical' => $user->getEmailCanonical()]);
 
+        if ($userByUsername && $userByEmail) {
+            $returnValue = [
+                "error" => true,
+                "message" => "Another user has the same username and email"
+            ];
+        }
+
         if ($userByUsername) {
             $returnValue = [
                 "error" => true,
@@ -71,13 +76,6 @@ class RegistrationListener implements EventSubscriberInterface
             $returnValue = [
                 "error" => true,
                 "message" => "Another user has the same email"
-            ];
-        }
-
-        if ($userByUsername && $userByEmail) {
-            $returnValue = [
-                "error" => true,
-                "message" => "Another user has the same username and email"
             ];
         }
 
