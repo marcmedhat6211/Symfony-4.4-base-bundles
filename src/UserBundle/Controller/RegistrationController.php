@@ -7,6 +7,7 @@ use App\UserBundle\Event\RegistrationEvent;
 use App\UserBundle\Form\RegistrationType;
 use App\UserBundle\PNUserEvents;
 use App\UserBundle\Security\CustomAuthenticator;
+use App\UserBundle\Util\PasswordUpdaterInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -27,6 +28,7 @@ class RegistrationController extends AbstractController
         Request                      $request,
         RequestStack                 $requestStack,
         UserPasswordEncoderInterface $passwordEncoder,
+        PasswordUpdaterInterface     $passwordUpdater,
         EventDispatcherInterface     $eventDispatcher,
         EntityManagerInterface       $em,
         CustomAuthenticator          $authenticator,
@@ -45,16 +47,19 @@ class RegistrationController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $formData = $form->getData();
-            $user->setPassword(
-                $passwordEncoder->encodePassword($user, $formData->getPassword())
-            );
+
+            //Hashing the user's password
+            $user->setPlainPassword($formData->getPassword());
+            $passwordUpdater->hashPassword($user);
 
             //dispatching an event that the registration is completed
             $event = new RegistrationEvent($user, $requestStack);
             $eventDispatcher->dispatch($event, PNUserEvents::REGISTRATION_COMPLETED);
+
+            // validating the username and the email uniqueness
             if ($user->registrationValidation["error"]) {
                 $this->addFlash("danger", $user->registrationValidation["message"]);
-                return $this->redirect($this->generateUrl('app_registration'));
+                return $this->redirectToRoute('app_registration');
             }
 
             $em->persist($user);

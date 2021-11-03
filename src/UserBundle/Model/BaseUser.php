@@ -46,6 +46,18 @@ abstract class BaseUser implements PNUserInterface
     protected $emailCanonical;
 
     /**
+     * @ORM\Column(name="salt", type="string", length=500, nullable=true)
+     */
+    protected $salt;
+
+    /**
+     * Plain password. Used for model validation. Must not be persisted.
+     *
+     * @var string
+     */
+    protected $plainPassword;
+
+    /**
      * @var string The hashed password
      * @ORM\Column(type="string")
      */
@@ -162,9 +174,18 @@ abstract class BaseUser implements PNUserInterface
         return $this->hasRole(static::ROLE_SUPER_ADMIN);
     }
 
-    /**
-     * @see UserInterface
-     */
+    public function getPlainPassword()
+    {
+        return $this->plainPassword;
+    }
+
+    public function setPlainPassword($plainPassword)
+    {
+        $this->plainPassword = $plainPassword;
+
+        return $this;
+    }
+
     public function getPassword(): ?string
     {
         return $this->password;
@@ -177,15 +198,16 @@ abstract class BaseUser implements PNUserInterface
         return $this;
     }
 
-    /**
-     * Returning a salt is only needed, if you are not using a modern
-     * hashing algorithm (e.g. bcrypt or sodium) in your security.yaml.
-     *
-     * @see UserInterface
-     */
-    public function getSalt(): ?string
+    public function setSalt($salt)
     {
-        return null;
+        $this->salt = $salt;
+
+        return $this;
+    }
+
+    public function getSalt()
+    {
+        return $this->salt;
     }
 
     /**
