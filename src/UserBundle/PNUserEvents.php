@@ -2,6 +2,9 @@
 
 namespace App\UserBundle;
 
+/**
+ * @author Marc Medhat <marcmedhat6211@gmail.com>
+ */
 final class PNUserEvents
 {
     /**

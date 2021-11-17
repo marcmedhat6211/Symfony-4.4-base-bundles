@@ -2,13 +2,14 @@
 
 namespace App\UserBundle\Event;
 
-use App\UserBundle\Entity\User;
 use App\UserBundle\Model\PNUserInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
-use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Contracts\EventDispatcher\Event;
 
+/**
+ * @author Marc Medhat <marcmedhat6211@gmail.com>
+ */
 class RegistrationEvent extends Event
 {
     protected PNUserInterface $user;

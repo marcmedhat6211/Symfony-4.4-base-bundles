@@ -6,6 +6,9 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Security\Core\User\UserInterface;
 
+/**
+ * @author Marc Medhat <marcmedhat6211@gmail.com>
+ */
 abstract class BaseUser implements PNUserInterface
 {
     /**

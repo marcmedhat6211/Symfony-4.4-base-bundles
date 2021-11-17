@@ -9,6 +9,9 @@ use App\UserBundle\Util\CanonicalizerInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
+/**
+ * @author Marc Medhat <marcmedhat6211@gmail.com>
+ */
 class RegistrationListener implements EventSubscriberInterface
 {
     private CanonicalizerInterface $canonicalizer;

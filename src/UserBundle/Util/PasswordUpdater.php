@@ -6,6 +6,9 @@ use App\UserBundle\Model\PNUserInterface;
 use Symfony\Component\Security\Core\Encoder\EncoderFactoryInterface;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
+/**
+ * @author Marc Medhat <marcmedhat6211@gmail.com>
+ */
 class PasswordUpdater implements PasswordUpdaterInterface
 {
     private $encoderFactory;

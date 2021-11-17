@@ -17,3 +17,7 @@ services:
     arguments: [ ]
     tags:
       - { name: kernel.event_subscriber }
+
+#  App\UserBundle\Doctrine\UserManager:
+#    arguments:
+#      $class: 'App\UserBundle\Model\PNUserInterface'

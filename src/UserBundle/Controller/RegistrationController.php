@@ -5,6 +5,7 @@ namespace App\UserBundle\Controller;
 use App\UserBundle\Entity\User;
 use App\UserBundle\Event\RegistrationEvent;
 use App\UserBundle\Form\RegistrationType;
+use App\UserBundle\Model\UserManagerInterface;
 use App\UserBundle\PNUserEvents;
 use App\UserBundle\Security\CustomAuthenticator;
 use App\UserBundle\Util\PasswordUpdaterInterface;
@@ -17,6 +18,9 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Guard\GuardAuthenticatorHandler;
 
+/**
+ * @author Marc Medhat <marcmedhat6211@gmail.com>
+ */
 class RegistrationController extends AbstractController
 {
 
@@ -24,13 +28,14 @@ class RegistrationController extends AbstractController
      * @Route("/register", name="app_registration")
      */
     public function register(
-        Request                      $request,
-        RequestStack                 $requestStack,
-        PasswordUpdaterInterface     $passwordUpdater,
-        EventDispatcherInterface     $eventDispatcher,
-        EntityManagerInterface       $em,
-        CustomAuthenticator          $authenticator,
-        GuardAuthenticatorHandler    $guard
+        Request                   $request,
+        RequestStack              $requestStack,
+        PasswordUpdaterInterface  $passwordUpdater,
+        EventDispatcherInterface  $eventDispatcher,
+        EntityManagerInterface    $em,
+        CustomAuthenticator       $authenticator,
+        GuardAuthenticatorHandler $guard,
+        UserManagerInterface      $userManager
     ): Response
     {
         //if user is already logged in just redirect him to home and tell him that he needs to logout first
@@ -39,7 +44,7 @@ class RegistrationController extends AbstractController
             return $this->redirectToRoute('fe_home');
         }
 
-        $user = new User();
+        $user = $userManager->createUser();
         $form = $this->createForm(RegistrationType::class, $user);
         $form->handleRequest($request);
 
@@ -47,6 +52,7 @@ class RegistrationController extends AbstractController
             $formData = $form->getData();
 
             //Hashing the user's password
+//            $userManager->updateUser($user);
             $user->setPlainPassword($formData->getPassword());
             $passwordUpdater->hashPassword($user);
 
@@ -73,4 +79,9 @@ class RegistrationController extends AbstractController
             'form' => $form->createView(),
         ]);
     }
+
+//    public function confirm(Request $request, $token)
+//    {
+//
+//    }
 }

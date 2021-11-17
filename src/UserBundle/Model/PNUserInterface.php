@@ -4,6 +4,9 @@ namespace App\UserBundle\Model;
 
 use Symfony\Component\Security\Core\User\UserInterface;
 
+/**
+ * @author Marc Medhat <marcmedhat6211@gmail.com>
+ */
 interface PNUserInterface extends UserInterface
 {
     const ROLE_DEFAULT = 'ROLE_USER';
